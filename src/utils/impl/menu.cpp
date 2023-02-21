@@ -291,19 +291,17 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
         }
     ;
 
-    auto size = m_trajectories.size();
-
-    if ( size > constants::TrajectoriesLimitPerThread )
+    if ( m_size > constants::TrajectoriesLimitPerThread )
     {
         auto const numberOfThreads =
-            size / constants::TrajectoriesLimitPerThread
+            m_size / constants::TrajectoriesLimitPerThread
         ;
 
         std::vector< std::thread > calculators;
         calculators.reserve( numberOfThreads );
 
         for ( std::size_t i = 0;
-            i < size;
+            i < m_size;
             i += constants::TrajectoriesLimitPerThread
         )
         {
@@ -321,7 +319,7 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
     }
     else
     {
-        for ( std::size_t i = 0; i < m_trajectories.size(); ++i )
+        for ( std::size_t i = 0; i < m_size; ++i )
         {
             if ( i == _index )
             {
