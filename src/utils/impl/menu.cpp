@@ -271,7 +271,7 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
     std::reverse( result.begin(), result.end() );
 
     return m_pCurrentCalculatedTrajectories->insert(
-        { _index, result } 
+        { _index, result }
     ).first->second;
 }
 

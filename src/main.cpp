@@ -1,6 +1,7 @@
 #include "utils/parser.h"
 #include "utils/menu.h"
 
+#include "common/constants.h"
 #include "common/output.h"
 
 #include <iostream>
@@ -21,6 +22,8 @@ int main ( int _argc, char * _argv[] )
     Parser parser;
 
     auto trajs = parser( filePath );
+
+    std::cout << std::setprecision( Precision );
 
     Menu menu( trajs );
 
