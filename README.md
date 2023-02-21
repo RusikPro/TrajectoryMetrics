@@ -96,7 +96,7 @@ The source code directory includes the following files:
 
 ## TODO
 - Apply some parallel SIMD computing to improve performance. There is a lot of trajectories, and their speed and length differences can be calculated in parallel.
-- Refactor menu class.
+- Refactor menu class. We can create another class for processing the trajectories and for menu we can simply add {option, callback} associations.
 
 ## License
 
