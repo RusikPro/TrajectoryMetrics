@@ -94,6 +94,10 @@ The source code directory includes the following files:
 - `data/small_trajectory.dat` - a test data with ten trajectories.
 - `data/large_trajectory.dat` - a large test data file which consists of 10000 with different lengths.
 
+## TODO
+- Apply some parallel SIMD computing to improve performance. There is a lot of trajectories, and their speed and length differences can be calculated in parallel.
+- Refactor menu class.
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
