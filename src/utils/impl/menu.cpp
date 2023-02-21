@@ -1,4 +1,5 @@
 #include "utils/menu.h"
+#include "utils/timer.h"
 
 #include "math/length_difference.h"
 #include "math/speed_difference.h"
@@ -9,6 +10,7 @@
 #include <chrono>
 #include <iostream>
 #include <mutex>
+#include <sstream>
 #include <thread>
 
 /*----------------------------------------------------------------------------*/
@@ -238,25 +240,17 @@ bool Menu::inputFailed () const
 
 Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
 {
-    auto start = std::chrono::high_resolution_clock::now();
+    Timer timer(
+        (   std::stringstream()
+                <<  "Duration of calculations for " << m_size
+                <<  " trajectories"
+        ).str()
+    );
 
     auto calculated = m_pCurrentCalculatedTrajectories->find( _index );
     if ( calculated != m_pCurrentCalculatedTrajectories->end() )
     {
-        auto const & closestTrajectories = calculated->second;
-
-        std::chrono::duration< double, std::micro > duration =
-            std::chrono::high_resolution_clock::now() - start
-        ;
-
-        std::cout
-            <<  "Duration of calculations for " << m_trajectories.size()
-            <<  " trajectories - " <<  duration.count()
-            <<  " microseconds"
-            <<  std::endl
-        ;
-
-        return closestTrajectories;
+        return calculated->second;
     }
 
     std::priority_queue< TrajData, TrajDatas, Compare > minHeap;
@@ -349,22 +343,9 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
 
     std::reverse( result.begin(), result.end() );
 
-    auto const & closestTrajectories = m_pCurrentCalculatedTrajectories->insert(
+    return m_pCurrentCalculatedTrajectories->insert(
         { _index, result }
     ).first->second;
-
-    std::chrono::duration< double, std::micro > duration =
-        std::chrono::high_resolution_clock::now() - start
-    ;
-
-    std::cout
-        <<  "Duration of calculations for " << m_trajectories.size()
-        <<  " trajectories - " <<  duration.count()
-        <<  " microseconds"
-        <<  std::endl
-    ;
-
-    return closestTrajectories;
 }
 
 /*----------------------------------------------------------------------------*/
