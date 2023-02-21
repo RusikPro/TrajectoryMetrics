@@ -6,7 +6,10 @@
 #include "common/output.h"
 #include "common/constants.h"
 
+#include <chrono>
 #include <iostream>
+#include <mutex>
+#include <thread>
 
 /*----------------------------------------------------------------------------*/
 
@@ -235,33 +238,110 @@ bool Menu::inputFailed () const
 
 Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     auto calculated = m_pCurrentCalculatedTrajectories->find( _index );
     if ( calculated != m_pCurrentCalculatedTrajectories->end() )
     {
-        return calculated->second;
+        auto const & closestTrajectories = calculated->second;
+
+        std::chrono::duration< double, std::micro > duration =
+            std::chrono::high_resolution_clock::now() - start
+        ;
+
+        std::cout
+            <<  "Duration of calculations for " << m_trajectories.size()
+            <<  " trajectories - " <<  duration.count()
+            <<  " microseconds"
+            <<  std::endl
+        ;
+
+        return closestTrajectories;
     }
 
     std::priority_queue< TrajData, TrajDatas, Compare > minHeap;
-    TrajDatas result;
-    result.reserve( constants::NumberOfClosest );
 
     auto const & refTraj = m_trajectories[ _index ];
 
-    for ( std::size_t i = 0; i < m_trajectories.size(); ++i )
-    {
-        if ( i == _index )
+    /*------------------------------------------------------------------------*/
+
+    std::mutex pqMutex;
+
+    auto calculateAndProcess =
+        [ this, _index, &refTraj, &minHeap, &pqMutex ]
+        ( std::size_t _minIdx, std::size_t _maxIdx )
         {
-            continue;
+            for ( std::size_t i = _minIdx; i < _maxIdx; ++i )
+            {
+                if ( i == _index )
+                {
+                    continue;
+                }
+
+                auto diff = m_metricFunction( refTraj, m_trajectories[ i ] );
+
+                std::lock_guard< std::mutex > lck( pqMutex );
+                minHeap.push( { i, diff } );
+
+                if ( minHeap.size() > constants::NumberOfClosest )
+                {
+                    minHeap.pop();
+                }
+            }
+        }
+    ;
+
+    auto size = m_trajectories.size();
+
+    if ( size > constants::TrajectoriesLimitPerThread )
+    {
+        auto const numberOfThreads =
+            size / constants::TrajectoriesLimitPerThread
+        ;
+
+        std::vector< std::thread > calculators;
+        calculators.reserve( numberOfThreads );
+
+        for ( std::size_t i = 0;
+            i < size;
+            i += constants::TrajectoriesLimitPerThread
+        )
+        {
+            calculators.push_back( std::thread( std::bind(
+                    calculateAndProcess
+                ,   i
+                ,   i + constants::TrajectoriesLimitPerThread
+            ) ) );
         }
 
-        auto diff = m_metricFunction( refTraj, m_trajectories[ i ] );
-        minHeap.push( { i, diff } );
-
-        if ( minHeap.size() > constants::NumberOfClosest )
+        for ( auto & calculator: calculators )
         {
-            minHeap.pop();
+            calculator.join();
         }
     }
+    else
+    {
+        for ( std::size_t i = 0; i < m_trajectories.size(); ++i )
+        {
+            if ( i == _index )
+            {
+                continue;
+            }
+
+            auto diff = m_metricFunction( refTraj, m_trajectories[ i ] );
+            minHeap.push( { i, diff } );
+
+            if ( minHeap.size() > constants::NumberOfClosest )
+            {
+                minHeap.pop();
+            }
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    TrajDatas result;
+    result.reserve( constants::NumberOfClosest );
 
     while ( !minHeap.empty() )
     {
@@ -271,9 +351,22 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
 
     std::reverse( result.begin(), result.end() );
 
-    return m_pCurrentCalculatedTrajectories->insert(
+    auto const & closestTrajectories = m_pCurrentCalculatedTrajectories->insert(
         { _index, result }
     ).first->second;
+
+    std::chrono::duration< double, std::micro > duration =
+        std::chrono::high_resolution_clock::now() - start
+    ;
+
+    std::cout
+        <<  "Duration of calculations for " << m_trajectories.size()
+        <<  " trajectories - " <<  duration.count()
+        <<  " microseconds"
+        <<  std::endl
+    ;
+
+    return closestTrajectories;
 }
 
 /*----------------------------------------------------------------------------*/
