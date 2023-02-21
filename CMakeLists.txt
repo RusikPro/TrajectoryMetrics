@@ -13,6 +13,7 @@ add_executable(
     # src/math/speed_difference.h
     # src/math/length_difference.h
     # src/utils/parser.h
+    # src/utils/menu.h
     src/math/impl/euclidean_distance.cpp
     src/math/impl/speed_difference.cpp
     src/math/impl/length_difference.cpp
