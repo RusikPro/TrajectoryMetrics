@@ -184,7 +184,8 @@ int Menu::selectTrajectory () const
         std::cout
             <<  "Please insert the index of the trajectory with range - "
             <<  "[1, " << m_size << "] - for which you want to find "
-            <<  constants::NumberOfClosest << " closest trajectories by chosen metric!"
+            <<  constants::NumberOfClosest << " closest trajectories by chosen "
+            <<  "metric!"
             <<  std::endl
         ;
 
