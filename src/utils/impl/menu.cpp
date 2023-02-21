@@ -44,6 +44,11 @@ void Menu::run () const
         std::cout << " > ";
         std::cin >> choice;
 
+        if ( inputFailed() )
+        {
+            continue;
+        }
+
         switch ( choice )
         {
             case 'p':
