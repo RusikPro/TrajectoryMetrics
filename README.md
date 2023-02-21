@@ -22,7 +22,7 @@ To use this tool, you will need to have C++ compiler installed on your computer,
 To use the tool, navigate to the build directory and run the following command:
 
 ```bash
-./build/the_binary
+./build/the_binary <path/to/trajectories_file>
 ```
 
 This will then outpout the menu and prompt to enter the option.
