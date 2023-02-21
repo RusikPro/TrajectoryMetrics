@@ -94,7 +94,7 @@ void Menu::printTrajectories () const
 {
     std::cout << "You chose to print trajectories!" <<  std::endl;
 
-    if ( m_size <= MaximumPrinted )
+    if ( m_size <= constants::MaximumPrinted )
     {
         int i{ 0 };
         for ( auto const & traj: m_trajectories )
@@ -108,7 +108,7 @@ void Menu::printTrajectories () const
         <<  "The number of trajectories in file is bigger than maximum "
             "printable: " << m_size << "!" << std::endl
         <<  "The maximum printable trajectories number is - "
-        <<  MaximumPrinted << std::endl
+        <<  constants::MaximumPrinted << std::endl
     ;
 
     int min, max;
@@ -133,7 +133,7 @@ void Menu::printTrajectories () const
 
         std::cout << "Min: " << min << " Max: " << max << std::endl;
 
-        if (    !( min < max ) || ( max - min ) > MaximumPrinted
+        if (    !( min < max ) || ( max - min ) > constants::MaximumPrinted
             ||  min < 1 || max > m_size
         )
         {
@@ -150,7 +150,7 @@ void Menu::printTrajectories () const
             ;
         }
     }
-    while ( !( min < max ) || ( max - min ) > MaximumPrinted
+    while ( !( min < max ) || ( max - min ) > constants::MaximumPrinted
         ||  min < 1 || max > m_size
     );
 }
@@ -158,7 +158,7 @@ void Menu::printTrajectories () const
 void Menu::printTrajectories ( TrajDatas const & _result ) const
 {
     std::cout
-        <<  NumberOfClosest << " closest trajectories: "
+        <<  constants::NumberOfClosest << " closest trajectories: "
         <<  std::endl
     ;
 
@@ -184,7 +184,7 @@ int Menu::selectTrajectory () const
         std::cout
             <<  "Please insert the index of the trajectory with range - "
             <<  "[1, " << m_size << "] - for which you want to find "
-            <<  NumberOfClosest << " closest trajectories by chosen metric!"
+            <<  constants::NumberOfClosest << " closest trajectories by chosen metric!"
             <<  std::endl
         ;
 
@@ -242,7 +242,7 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
 
     std::priority_queue< TrajData, TrajDatas, Compare > minHeap;
     TrajDatas result;
-    result.reserve( NumberOfClosest );
+    result.reserve( constants::NumberOfClosest );
 
     auto const & refTraj = m_trajectories[ _index ];
 
@@ -256,7 +256,7 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
         auto diff = m_metricFunction( refTraj, m_trajectories[ i ] );
         minHeap.push( { i, diff } );
 
-        if ( minHeap.size() > NumberOfClosest )
+        if ( minHeap.size() > constants::NumberOfClosest )
         {
             minHeap.pop();
         }

@@ -23,7 +23,7 @@ int main ( int _argc, char * _argv[] )
 
     auto trajs = parser( filePath );
 
-    std::cout << std::setprecision( Precision );
+    std::cout << std::setprecision( constants::Precision );
 
     Menu menu( trajs );
 
