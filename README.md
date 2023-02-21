@@ -86,8 +86,10 @@ The source code directory includes the following files:
 - `src/math/euclidean_distance.h` - a function to calculate the Euclidean distance between two points.
 - `src/math/speed_difference.h` - a function to calculate the speed difference between two trajectories.
 - `src/math/length_difference.h` - a function to calculate the length difference between two trajectories.
+- `src/math/impl/euclidean_distance.cpp`, `src/math/impl/speed_distance.cpp`, `src/math/impl/length_distance.cpp` - implementations.
 - `src/utils/parser.h` - a utility to parse trajectory data from a file.
 - `src/utils/menu.h` - a menu class to print trajectories, choose the reference trajectory and metrics.
+- `src/utils/parser.cpp`, `src/utils/menu.cpp`,  - implementations.
 - `data/test_trajectory.dat` - a test data with two trajectories.
 - `data/small_trajectory.dat` - a test data with ten trajectories.
 - `data/large_trajectory.dat` - a large test data file which consists of 10000 with different lengths.
