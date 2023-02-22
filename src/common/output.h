@@ -17,14 +17,12 @@ _OutStreamT & operator << (
 )
 {
     _os << "{ ";
-    for ( std::size_t i{ 0 }; i < _tps.size(); ++i )
+    auto const sz = _tps.size() - 1;
+    for ( std::size_t i{ 0 }; i < sz; ++i )
     {
-        _os << _tps[ i ];
-        if ( i < _tps.size() - 1 )
-        {
-            _os << ", ";
-        }
+        _os << _tps[ i ] << ", ";
     }
+    _os << _tps[ sz ];
 
     _os << " }";
     return _os;

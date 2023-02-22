@@ -258,7 +258,7 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
         return calculated->second;
     }
 
-    std::priority_queue< TrajData, TrajDatas, Compare > minHeap;
+    std::priority_queue< TrajData, std::vector< TrajData >, Compare > minHeap;
 
     auto const & refTraj = m_trajectories[ _index ];
 
