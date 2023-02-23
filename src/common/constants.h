@@ -14,7 +14,7 @@ namespace constants {
 static constexpr std::size_t MaximumPrinted = 100;
 static constexpr std::size_t NumberOfClosest = 3;
 static constexpr std::size_t Precision = 9;
-static constexpr std::size_t TrajectoriesLimitPerThread = 1000;
+static constexpr std::size_t TrajectoriesLimitPerThread = 500;
 
 /*----------------------------------------------------------------------------*/
 
