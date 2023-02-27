@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <thread>
 
@@ -263,11 +264,10 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
 
     /*------------------------------------------------------------------------*/
 
-    std::vector< TrajData > allDifferences;
-    allDifferences.reserve( m_size );
+    std::mutex pqMutex;
 
     auto calculateAndProcess =
-        [ this, _index, &refTraj, &minHeap, &allDifferences ]
+        [ this, _index, &refTraj, &minHeap, &pqMutex ]
         ( std::size_t _minIdx, std::size_t _maxIdx )
         {
             for ( std::size_t i = _minIdx; i < _maxIdx; ++i )
@@ -279,7 +279,13 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
 
                 auto diff = m_metricFunction( refTraj, m_trajectories[ i ] );
 
-                allDifferences.push_back( { i, diff } );
+                std::lock_guard< std::mutex > lck( pqMutex );
+                minHeap.push( { i, diff } );
+
+                if ( minHeap.size() > constants::NumberOfClosest )
+                {
+                    minHeap.pop();
+                }
             }
         }
     ;
@@ -308,21 +314,6 @@ Menu::TrajDatas const & Menu::findClosestByMetric ( int _index ) const
         for ( auto & calculator: calculators )
         {
             calculator.join();
-        }
-
-        for ( std::size_t i = 0; i < m_size; ++i )
-        {
-            if ( i == _index )
-            {
-                continue;
-            }
-
-            minHeap.push( allDifferences[ 0 ] );
-
-            if ( minHeap.size() > constants::NumberOfClosest )
-            {
-                minHeap.pop();
-            }
         }
     }
     else
